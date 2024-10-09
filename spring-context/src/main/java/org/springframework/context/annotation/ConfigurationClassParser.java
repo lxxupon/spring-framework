@@ -266,7 +266,9 @@ class ConfigurationClassParser {
 			ConfigurationClass configClass, SourceClass sourceClass, Predicate<String> filter)
 			throws IOException {
 
+		//@Configuration继承了@Component
 		if (configClass.getMetadata().isAnnotated(Component.class.getName())) {
+			// 递归处理内部类，因为内部类也是一个配置类，配置类上有@configuration注解，该注解继承@Component,if判断为true,调用processMemberClasses方法，递归解析配置类
 			// Recursively process any member (nested) classes first
 			processMemberClasses(configClass, sourceClass, filter);
 		}
@@ -328,6 +330,7 @@ class ConfigurationClassParser {
 		}
 
 		// Process default methods on interfaces
+		// 处理接口的默认方法实现，从jdk8开始，接口中的方法可以有自己的默认实现，因此如果这个接口的方法加了@Bean注解，也需要被解析
 		processInterfaces(configClass, sourceClass);
 
 		// Process superclass, if any
